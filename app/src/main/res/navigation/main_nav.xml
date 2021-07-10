@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/healthListFragment">
+
+    <fragment
+        android:id="@+id/healthListFragment"
+        android:name="com.example.myhealth.view.HealthListFragment"
+        android:label="HealthListFragment" >
+        <action
+            android:id="@+id/action_healthListFragment_to_enterDataFragment"
+            app:destination="@id/enterDataFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/enterDataFragment"
+        android:name="com.example.myhealth.view.EnterDataFragment"
+        android:label="EnterDataFragment" >
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>
