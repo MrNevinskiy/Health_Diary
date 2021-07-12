@@ -43,6 +43,8 @@ class EnterDataFragment : Fragment(R.layout.fragment_enter_data) {
         val data = HealthData(
             date = getCurrentDate(),
             pressureDay = presDay.toString(),
+            timeDay = getCurrentTime(),
+            timeNight = getCurrentTime(),
             pulseDay = pulseDay.toString(),
             pressureNight = presNight.toString(),
             pulseNight = pulseNight.toString()
@@ -54,6 +56,13 @@ class EnterDataFragment : Fragment(R.layout.fragment_enter_data) {
     private fun getCurrentDate(): String {
         val date = Calendar.getInstance().time
         val formatter = SimpleDateFormat("dd.MM, yyyy")
+        return formatter.format(date)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun getCurrentTime(): String {
+        val date = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("HH:mm")
         return formatter.format(date)
     }
 

@@ -18,6 +18,7 @@ class HealthListFragment : Fragment(R.layout.fragment_item_list) {
 
     private val viewModel: HealthListViewModel by viewModel()
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: MyHealthListAdapter
     private lateinit var binding: FragmentItemListBinding
     private var id: String? = null
 
@@ -42,11 +43,8 @@ class HealthListFragment : Fragment(R.layout.fragment_item_list) {
     private fun renderData(appState: AppState?) {
         when (appState) {
             is AppState.Success<*> -> {
-                when (appState.data) {
-                    is HealthData -> {
-                        recyclerView.adapter = MyHealthListAdapter(appState.data)
-                    }
-                }
+                        adapter.data = appState.data as List<HealthData>
+                        recyclerView.adapter = adapter
             }
             else -> Toast.makeText(context, "ErrorData", Toast.LENGTH_LONG).show()
         }

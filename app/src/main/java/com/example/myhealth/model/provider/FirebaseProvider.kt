@@ -66,7 +66,7 @@ class FirebaseProvider(val firebaseAuth: FirebaseAuth, val store: FirebaseFirest
 
     override suspend fun saveHealData(health: HealthData): HealthData = suspendCoroutine { continuation ->
         try {
-            healthReference.document(health.date.toString()).set(health)
+            healthReference.document(health.id.toString()).set(health)
                 .addOnSuccessListener {
                     continuation.resume(health)
                 }.addOnFailureListener {

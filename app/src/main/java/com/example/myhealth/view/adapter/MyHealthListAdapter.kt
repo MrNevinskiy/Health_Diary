@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myhealth.databinding.ItemListBinding
 import com.example.myhealth.model.data.HealthData
 
-class MyHealthListAdapter(private val values: HealthData) : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>() {
+class MyHealthListAdapter : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>() {
 
     var data: List<HealthData> = listOf()
         set(value) {
