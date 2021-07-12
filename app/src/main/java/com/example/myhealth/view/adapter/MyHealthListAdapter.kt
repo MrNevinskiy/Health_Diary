@@ -7,7 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myhealth.databinding.ItemListBinding
 import com.example.myhealth.model.data.HealthData
 
-class MyHealthListAdapter(private val values: List<HealthData>) : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>() {
+class MyHealthListAdapter(private val values: HealthData) : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>() {
+
+    var data: List<HealthData> = listOf()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ItemListBinding.inflate
@@ -15,7 +21,7 @@ class MyHealthListAdapter(private val values: List<HealthData>) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
+        val item = data[position]
         holder.idDate.text = item.date
 
         holder.idPressureDay.text = item.pressureDay
@@ -27,7 +33,7 @@ class MyHealthListAdapter(private val values: List<HealthData>) : RecyclerView.A
         holder.idPulseNight.text = item.pulseNight
     }
 
-    override fun getItemCount(): Int = values.size
+    override fun getItemCount(): Int = data.size
 
     inner class ViewHolder(binding: ItemListBinding) : RecyclerView.ViewHolder(binding.root) {
         val idDate: TextView = binding.itemDate

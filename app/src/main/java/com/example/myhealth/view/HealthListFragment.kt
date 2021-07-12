@@ -31,6 +31,7 @@ class HealthListFragment : Fragment(R.layout.fragment_item_list) {
     }
 
     private fun init(){
+        viewModel.getHealth()
         recyclerView = binding.list
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.fab.setOnClickListener {
@@ -43,7 +44,7 @@ class HealthListFragment : Fragment(R.layout.fragment_item_list) {
             is AppState.Success<*> -> {
                 when (appState.data) {
                     is HealthData -> {
-                        recyclerView.adapter = MyHealthListAdapter(appState.data as List<HealthData>)
+                        recyclerView.adapter = MyHealthListAdapter(appState.data)
                     }
                 }
             }

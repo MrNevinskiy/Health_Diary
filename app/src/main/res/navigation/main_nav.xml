@@ -21,5 +21,8 @@
             android:name="id"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_enterDataFragment_to_healthListFragment"
+            app:destination="@id/healthListFragment"/>
     </fragment>
 </navigation>
