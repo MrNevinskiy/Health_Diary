@@ -1,13 +1,13 @@
 package com.example.myhealth.model.provider
 
 import com.example.myhealth.model.AppState
-import com.example.myhealth.model.NoAuthExceptions
+import com.example.myhealth.model.exceptions.NoAuthExceptions
 import com.example.myhealth.model.data.HealthData
 import com.example.myhealth.model.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -15,52 +15,44 @@ import kotlin.coroutines.suspendCoroutine
 class FirebaseProvider(val firebaseAuth: FirebaseAuth, val store: FirebaseFirestore) :
     IFirebaseProvider {
 
-    private val currentUser get() = firebaseAuth.currentUser
-
     private val healthReference
-        get() = currentUser?.let {
-            store.collection(USERS_COLLECTION).document(it.uid).collection(HEALTH_COLLECTION)
-        } ?: throw NoAuthExceptions()
+        get() = currentUser?.let { store.collection(USERS_COLLECTION).document(it.uid).collection(HEALTH_COLLECTION) } ?: throw NoAuthExceptions()
 
-    override fun subscribeToAllHealthData(): Channel<AppState> =
-        Channel<AppState>(Channel.CONFLATED).apply {
-            var registration: ListenerRegistration? = null
+    private val currentUser
+        get() = firebaseAuth.currentUser
 
-            try {
-                registration = healthReference.addSnapshotListener { snapshot, e ->
-                    val value = e?.let {
-                        AppState.Error(it)
-                    } ?: snapshot?.let {
-                        val health =
-                            snapshot.documents.mapNotNull { it.toObject(HealthData::class.java) }
-                        AppState.Success(health)
-                    }
-
-                    value?.let { trySend(it) }
+    override fun subscribeToAllHealthData(): ReceiveChannel<AppState> = Channel<AppState>(Channel.CONFLATED).apply {
+        try {
+            healthReference.addSnapshotListener { snapshot, error ->
+                val value = error?.let {
+                    AppState.Error(it)
+                } ?: snapshot?.let {
+                    val healthDataList = it.documents.map { it.toObject(HealthData::class.java) as HealthData }
+                    AppState.Success(healthDataList)
                 }
-            } catch (t: Throwable) {
-                trySend(AppState.Error(t))
+                value?.let { offer(it) }
             }
-            invokeOnClose { registration?.remove() }
-        }
-
-    override suspend fun getCurrentUser(): User = suspendCoroutine { continuation ->
-        currentUser?.let { User(it.displayName ?: "", it.email ?: "") }?.let {
-            continuation.resume(it)
+        } catch (e: Throwable){
+            offer(AppState.Error(e))
         }
     }
 
-    override suspend fun getAllHealthData(id: String): HealthData? = suspendCoroutine { continuation ->
-        try {
+    override suspend fun getCurrentUser(): User? = suspendCoroutine { continuation ->
+        val user = currentUser?.let { User(it.displayName ?: "", it.email ?: "") }
+        continuation.resume(user)
+    }
+
+    override suspend fun getAllHealthData(id: String): HealthData = suspendCoroutine {continuation ->
+        try{
             healthReference.document(id).get()
-                .addOnSuccessListener { snapshot ->
-                    val health = snapshot.toObject(HealthData::class.java)
-                    continuation.resume(health)
-                }.addOnFailureListener {
+                .addOnSuccessListener { snapshot->
+                    val note = snapshot.toObject(HealthData::class.java) as HealthData
+                    continuation.resume(note)
+                }.addOnFailureListener{
                     continuation.resumeWithException(it)
                 }
-        } catch (t: Throwable) {
-            continuation.resumeWithException(t)
+        } catch (e: Throwable){
+            continuation.resumeWithException(e)
         }
     }
 

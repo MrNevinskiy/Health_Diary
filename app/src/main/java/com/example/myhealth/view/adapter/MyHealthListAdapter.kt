@@ -16,12 +16,15 @@ class MyHealthListAdapter : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ItemListBinding.inflate
-            (LayoutInflater.from(parent.context), parent, false))
+        return ViewHolder(
+            ItemListBinding.inflate
+                (LayoutInflater.from(parent.context), parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
+
         holder.idDate.text = item.date
 
         holder.idPressureDay.text = item.pressureDay
@@ -45,6 +48,7 @@ class MyHealthListAdapter : RecyclerView.Adapter<MyHealthListAdapter.ViewHolder>
         val idTimeNight: TextView = binding.itemTimeNight
         val idPressureNight: TextView = binding.itemPressureNight
         val idPulseNight: TextView = binding.itemPulseNight
+
     }
 
 }

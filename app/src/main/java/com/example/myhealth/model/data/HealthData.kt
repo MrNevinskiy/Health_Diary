@@ -18,7 +18,6 @@ data class HealthData(
         if (this === other) return true
         if (this.javaClass != other?.javaClass) return false
 
-        // приведение типов:
         other as HealthData
 
         if (id != other.id) return false
